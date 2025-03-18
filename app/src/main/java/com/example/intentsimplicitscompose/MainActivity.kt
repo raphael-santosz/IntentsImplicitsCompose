@@ -36,6 +36,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.remember
 import coil.compose.AsyncImage
+import androidx.core.content.ContextCompat
+import android.provider.MediaStore
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
+
+
 
 class MainActivity : ComponentActivity() {
 
@@ -245,6 +256,7 @@ class MainActivity : ComponentActivity() {
                     Text(text = "Abrir Agenda de Contactos")
                 }
                 GalleryImagePicker(modifier)
+                CameraButton(modifier)
             }
         }
     }
@@ -260,6 +272,69 @@ class MainActivity : ComponentActivity() {
         const val textoSMS = "Hola, este es un mensaje de prueba enviado desde la app."
 
     }
+
+    @Composable
+    fun CameraButton(modifier: Modifier = Modifier) {
+        val context = LocalContext.current
+        val cameraPermissionGranted = remember { mutableStateOf(false) }
+
+        // Verificar permissão ao retornar ao app (método mais convencional e estável)
+        val lifecycleOwner = LocalLifecycleOwner.current
+        val currentContext by rememberUpdatedState(context)
+
+        DisposableEffect(lifecycleOwner) {
+            val observer = object : DefaultLifecycleObserver {
+                override fun onResume(owner: LifecycleOwner) {
+                    cameraPermissionGranted.value = ContextCompat.checkSelfPermission(
+                        currentContext,
+                        android.Manifest.permission.CAMERA
+                    ) == PackageManager.PERMISSION_GRANTED
+                }
+            }
+            lifecycleOwner.lifecycle.addObserver(observer)
+
+            onDispose {
+                lifecycleOwner.lifecycle.removeObserver(observer)
+            }
+        }
+
+        if (!cameraPermissionGranted.value) {
+            Text(
+                text = "Para usar a câmera, conceda a permissão manualmente nas configurações do aplicativo.",
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+        }
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 10.dp),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            ElevatedButton(
+                modifier = Modifier.padding(vertical = 10.dp),
+                elevation = ButtonDefaults.elevatedButtonElevation(5.dp),
+                onClick = {
+                    if (cameraPermissionGranted.value) {
+                        val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                        context.startActivity(cameraIntent)
+                    } else {
+                        Toast.makeText(
+                            context,
+                            "Permissão não concedida. Vá até as configurações e conceda manualmente.",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                },
+                enabled = cameraPermissionGranted.value
+            ) {
+                Text(text = "Abrir Câmera")
+            }
+        }
+    }
+
+
+
 
 
     @Composable
