@@ -8,6 +8,7 @@ android {
     namespace = "com.example.intentsimplicitscompose"
     compileSdk = 35
 
+
     defaultConfig {
         applicationId = "com.example.intentsimplicitscompose"
         minSdk = 28
@@ -40,7 +41,7 @@ android {
 }
 
 dependencies {
-
+    implementation("io.coil-kt:coil-compose:2.1.0")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)

@@ -199,6 +199,26 @@ class MainActivity : ComponentActivity() {
                 {
                     Text(text = stringResource(R.string.Boton5))
                 }
+                ElevatedButton(
+                    modifier = modifier
+                        .align(alignment = Alignment.CenterHorizontally)
+                        .padding(vertical = 10.dp),
+                    elevation = ButtonDefaults.elevatedButtonElevation(5.dp),
+                    onClick = {
+                        Toast.makeText(
+                            context,
+                            "Enviando SMS",
+                            Toast.LENGTH_LONG
+                        ).show()
+                        val smsIntent = Intent(Intent.ACTION_SENDTO).apply {
+                            data = Uri.parse("smsto:$telefSMS")
+                            putExtra("sms_body", textoSMS)
+                        }
+                        context.startActivity(smsIntent)
+                    }
+                ) {
+                    Text(text = "Enviar SMS")
+                }
             }
         }
     }
@@ -210,7 +230,11 @@ class MainActivity : ComponentActivity() {
         const val webEPS = "http://www.eps.udl.cat/"
         const val textoABuscar = "escola politecnica superior UdL"
         const val telef = "666666666"
+        const val telefSMS = "123456789"
+        const val textoSMS = "Hola, este es un mensaje de prueba enviado desde la app."
+
     }
+
 
 
     @Preview(showBackground = true)
@@ -221,3 +245,4 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
