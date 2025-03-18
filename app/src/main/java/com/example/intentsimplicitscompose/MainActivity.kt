@@ -314,7 +314,7 @@ class MainActivity : ComponentActivity() {
                         ).show()
                     }
                 },
-                enabled = cameraPermissionGranted.value
+                enabled = true  // 🔥 Botão habilitado sempre para permitir o clique e ativar o Toast
             ) {
                 Text(text = "Abrir Câmera")
             }
