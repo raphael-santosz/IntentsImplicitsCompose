@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
+import android.provider.ContactsContract
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -218,6 +219,24 @@ class MainActivity : ComponentActivity() {
                     }
                 ) {
                     Text(text = "Enviar SMS")
+                }
+                ElevatedButton(
+                    modifier = modifier
+                        .align(alignment = Alignment.CenterHorizontally)
+                        .padding(vertical = 10.dp),
+                    elevation = ButtonDefaults.elevatedButtonElevation(5.dp),
+                    onClick = {
+                        Toast.makeText(
+                            context,
+                            "Accediendo a la agenda de contactos",
+                            Toast.LENGTH_LONG
+                        ).show()
+                        val contactsIntent = Intent(Intent.ACTION_PICK, Uri.parse("content://contacts"))
+                        contactsIntent.type = ContactsContract.CommonDataKinds.Phone.CONTENT_TYPE
+                        context.startActivity(contactsIntent)
+                    }
+                ) {
+                    Text(text = "Abrir Agenda de Contactos")
                 }
             }
         }
