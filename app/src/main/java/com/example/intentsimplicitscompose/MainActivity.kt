@@ -31,6 +31,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.intentsimplicitscompose.ui.theme.IntentsImplicitsComposeTheme
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.remember
+import coil.compose.AsyncImage
 
 class MainActivity : ComponentActivity() {
 
@@ -239,6 +244,7 @@ class MainActivity : ComponentActivity() {
                 ) {
                     Text(text = "Abrir Agenda de Contactos")
                 }
+                GalleryImagePicker(modifier)
             }
         }
     }
@@ -255,6 +261,46 @@ class MainActivity : ComponentActivity() {
 
     }
 
+
+    @Composable
+    fun GalleryImagePicker(modifier: Modifier = Modifier) {
+        val context = LocalContext.current
+        val selectedImageUri = remember { mutableStateOf<Uri?>(null) }
+
+        val launcher = rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.GetContent()
+        ) { uri: Uri? ->
+            selectedImageUri.value = uri
+            if (uri != null) {
+                Toast.makeText(context, "Imagen seleccionada correctamente", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(context, "Selección cancelada", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        Row(
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(vertical = 10.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            ElevatedButton(
+                modifier = modifier.padding(end = 10.dp),
+                elevation = ButtonDefaults.elevatedButtonElevation(5.dp),
+                onClick = { launcher.launch("image/*") }
+            ) {
+                Text(text = "Abrir Galería")
+            }
+
+            selectedImageUri.value?.let { uri ->
+                AsyncImage(
+                    model = uri,
+                    contentDescription = "Imagen seleccionada",
+                    modifier = Modifier.size(100.dp)
+                )
+            }
+        }
+    }
 
 
     @Preview(showBackground = true)
