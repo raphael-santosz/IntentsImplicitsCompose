@@ -45,6 +45,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.rememberScrollState
 
 
 
@@ -79,10 +81,9 @@ class MainActivity : ComponentActivity() {
     fun MyApp(modifier: Modifier = Modifier) {
         val context = LocalContext.current
         val launchCallPhonePerm =
-            rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission())
-            { isGranted: Boolean ->
+            rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
                 if (isGranted) {
-                    Toast.makeText(context,"Permission Granted", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Permission Granted", Toast.LENGTH_SHORT).show()
                     callPhonePerm.value = true
                 } else {
                     Toast.makeText(context, "Permission Denied", Toast.LENGTH_SHORT).show()
@@ -93,26 +94,32 @@ class MainActivity : ComponentActivity() {
         LaunchedEffect(Unit) {
             if (checkSelfPermission(android.Manifest.permission.CALL_PHONE) ==
                 PackageManager.PERMISSION_GRANTED
-            ) {callPhonePerm.value = true}
-            else {
-                Log.i(TAG,"Requesting permission")
+            ) {
+                callPhonePerm.value = true
+            } else {
+                Log.i(TAG, "Requesting permission")
                 launchCallPhonePerm.launch(permissionCallPhone)
             }
         }
 
-        Surface(modifier = modifier)
-        {
-            Column(modifier.fillMaxSize()) {
+        Surface(modifier = modifier) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState()) // 🔥 Scroll agora envolve toda a tela
+            ) {
                 Text(
                     modifier = modifier.padding(vertical = 28.dp),
                     text = stringResource(R.string.bienvenidos)
                 )
+
                 Text(
-                    modifier = modifier.align(alignment = Alignment.CenterHorizontally).padding(vertical = 10.dp),
+                    modifier = modifier.align(Alignment.CenterHorizontally).padding(vertical = 10.dp),
                     text = stringResource(R.string.ubicando)
                 )
+
                 ElevatedButton(
-                    modifier = modifier.padding(vertical = 10.dp).align(alignment = Alignment.CenterHorizontally),
+                    modifier = modifier.padding(vertical = 10.dp).align(Alignment.CenterHorizontally),
                     elevation = ButtonDefaults.elevatedButtonElevation(5.dp),
                     onClick = {
                         Toast.makeText(
@@ -126,15 +133,12 @@ class MainActivity : ComponentActivity() {
                         )
                         context.startActivity(intent)
                     }
-                )
-                {
-                    Text(
-                        text = stringResource(R.string.Boton1)
-                    )
+                ) {
+                    Text(text = stringResource(R.string.Boton1))
                 }
 
                 ElevatedButton(
-                    modifier = modifier.padding(vertical = 10.dp).align(alignment = Alignment.CenterHorizontally),
+                    modifier = modifier.padding(vertical = 10.dp).align(Alignment.CenterHorizontally),
                     elevation = ButtonDefaults.elevatedButtonElevation(5.dp),
                     onClick = {
                         Toast.makeText(
@@ -147,18 +151,17 @@ class MainActivity : ComponentActivity() {
                         )
                         context.startActivity(intent)
                     }
-                )
-                {
+                ) {
                     Text(text = stringResource(R.string.Boton2))
                 }
 
                 Text(
-                    modifier = modifier.align(alignment = Alignment.CenterHorizontally).padding(vertical = 30.dp),
+                    modifier = modifier.align(Alignment.CenterHorizontally).padding(vertical = 30.dp),
                     text = stringResource(R.string.navegando)
                 )
 
                 ElevatedButton(
-                    modifier = modifier.align(alignment = Alignment.CenterHorizontally).padding(vertical = 3.dp),
+                    modifier = modifier.align(Alignment.CenterHorizontally).padding(vertical = 3.dp),
                     elevation = ButtonDefaults.elevatedButtonElevation(5.dp),
                     onClick = {
                         Toast.makeText(
@@ -177,7 +180,7 @@ class MainActivity : ComponentActivity() {
                 }
 
                 ElevatedButton(
-                    modifier = modifier.align(alignment = Alignment.CenterHorizontally).padding(vertical = 10.dp),
+                    modifier = modifier.align(Alignment.CenterHorizontally).padding(vertical = 10.dp),
                     elevation = ButtonDefaults.elevatedButtonElevation(5.dp),
                     onClick = {
                         Toast.makeText(
@@ -197,8 +200,9 @@ class MainActivity : ComponentActivity() {
                     modifier = modifier.padding(vertical = 30.dp),
                     text = stringResource(R.string.contactando)
                 )
+
                 ElevatedButton(
-                    modifier = modifier.align(alignment = Alignment.CenterHorizontally).padding(vertical = 1.dp),
+                    modifier = modifier.align(Alignment.CenterHorizontally).padding(vertical = 1.dp),
                     elevation = ButtonDefaults.elevatedButtonElevation(5.dp),
                     enabled = callPhonePerm.value,
                     onClick = {
@@ -216,9 +220,10 @@ class MainActivity : ComponentActivity() {
                 {
                     Text(text = stringResource(R.string.Boton5))
                 }
+
                 ElevatedButton(
                     modifier = modifier
-                        .align(alignment = Alignment.CenterHorizontally)
+                        .align(Alignment.CenterHorizontally)
                         .padding(vertical = 10.dp),
                     elevation = ButtonDefaults.elevatedButtonElevation(5.dp),
                     onClick = {
@@ -236,9 +241,10 @@ class MainActivity : ComponentActivity() {
                 ) {
                     Text(text = "Enviar SMS")
                 }
+
                 ElevatedButton(
                     modifier = modifier
-                        .align(alignment = Alignment.CenterHorizontally)
+                        .align(Alignment.CenterHorizontally)
                         .padding(vertical = 10.dp),
                     elevation = ButtonDefaults.elevatedButtonElevation(5.dp),
                     onClick = {
@@ -255,22 +261,11 @@ class MainActivity : ComponentActivity() {
                 ) {
                     Text(text = "Abrir Agenda de Contactos")
                 }
+
                 GalleryImagePicker(modifier)
                 CameraButton(modifier)
             }
         }
-    }
-
-    companion object {
-        const val lat = "41.60788"
-        const val lon = "0.623333"
-        const val address = "Carrer de Jaume II, 69, Lleida"
-        const val webEPS = "http://www.eps.udl.cat/"
-        const val textoABuscar = "escola politecnica superior UdL"
-        const val telef = "666666666"
-        const val telefSMS = "123456789"
-        const val textoSMS = "Hola, este es un mensaje de prueba enviado desde la app."
-
     }
 
     @Composable
@@ -278,7 +273,6 @@ class MainActivity : ComponentActivity() {
         val context = LocalContext.current
         val cameraPermissionGranted = remember { mutableStateOf(false) }
 
-        // Verificar permissão ao retornar ao app (método mais convencional e estável)
         val lifecycleOwner = LocalLifecycleOwner.current
         val currentContext by rememberUpdatedState(context)
 
@@ -298,13 +292,7 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        if (!cameraPermissionGranted.value) {
-            Text(
-                text = "Para usar a câmera, conceda a permissão manualmente nas configurações do aplicativo.",
-                modifier = Modifier.padding(vertical = 8.dp)
-            )
-        }
-
+        // Primeiro exibe o botão
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -331,11 +319,15 @@ class MainActivity : ComponentActivity() {
                 Text(text = "Abrir Câmera")
             }
         }
+
+        // Exibe a mensagem apenas se a permissão não foi concedida
+        if (!cameraPermissionGranted.value) {
+            Text(
+                text = "Para usar a câmera, conceda a permissão manualmente nas configurações do aplicativo.",
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+        }
     }
-
-
-
-
 
     @Composable
     fun GalleryImagePicker(modifier: Modifier = Modifier) {
@@ -377,6 +369,17 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    companion object {
+        const val lat = "41.60788"
+        const val lon = "0.623333"
+        const val address = "Carrer de Jaume II, 69, Lleida"
+        const val webEPS = "http://www.eps.udl.cat/"
+        const val textoABuscar = "escola politecnica superior UdL"
+        const val telef = "666666666"
+        const val telefSMS = "123456789"
+        const val textoSMS = "Hola, este es un mensaje de prueba enviado desde la app."
+
+    }
 
     @Preview(showBackground = true)
     @Composable
@@ -386,4 +389,3 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
