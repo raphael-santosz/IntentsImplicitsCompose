@@ -231,8 +231,9 @@ class MainActivity : ComponentActivity() {
                             "Accediendo a la agenda de contactos",
                             Toast.LENGTH_LONG
                         ).show()
-                        val contactsIntent = Intent(Intent.ACTION_PICK, Uri.parse("content://contacts"))
-                        contactsIntent.type = ContactsContract.CommonDataKinds.Phone.CONTENT_TYPE
+                        val contactsIntent = Intent(Intent.ACTION_VIEW).apply {
+                            data = Uri.parse("content://contacts/people/")
+                        }
                         context.startActivity(contactsIntent)
                     }
                 ) {
